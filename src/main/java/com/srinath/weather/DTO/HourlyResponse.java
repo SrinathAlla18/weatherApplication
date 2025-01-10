@@ -5,13 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HourlyResponse {
+public class HourlyResponse implements Serializable {
     @JsonProperty("resolvedAddress")
     private String resolvedAddress;
     @JsonProperty("days")
@@ -22,7 +23,7 @@ public class HourlyResponse {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class DaysWeather{
+    public static class DaysWeather implements Serializable{
         @JsonProperty("datetime")
         private String datetime;
         private List<HourlyData> hours;
@@ -32,7 +33,7 @@ public class HourlyResponse {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class HourlyData{
+    public static class HourlyData implements Serializable{
         private String datetime;
         private double temp;
         private double feelslike;

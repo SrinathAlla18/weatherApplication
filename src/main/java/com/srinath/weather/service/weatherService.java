@@ -1,10 +1,9 @@
 package com.srinath.weather.service;
 import com.srinath.weather.DTO.HourlyResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.srinath.weather.DTO.weatherResponse2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +19,7 @@ public class weatherService {
     @Value("${weather.api.base-url}")
     private String baseUrl;
 
+    @Cacheable(value = "dailyData",key = "#location")
     public weatherResponse2 dailyService(String location)  {
         String WEATHER_API_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+location+"?key="+apiKey;
 
@@ -36,6 +36,7 @@ public class weatherService {
             return new weatherResponse2("An unexpected error occurred", List.of());
         }
     }
+    @Cacheable(value = "hourlyData",key = "#location")
     public List<HourlyResponse.HourlyData> hourlyService(String location) {
         String WEATHER_API_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+location+"?key="+apiKey;
         try{

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -14,17 +15,16 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 
-public class weatherResponse2 {
+public class weatherResponse2 implements Serializable {
     @JsonProperty("resolvedAddress")
     private String resolvedAddress;
     @JsonProperty("days")
-    private List<DayWeather> daysweather;
-    // Nested class representing the day's weather data
+    private List<DayWeather> daysweather;// Nested class representing the day's weather data
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-     public static class DayWeather {
+     public static class DayWeather implements Serializable {
 
         @JsonProperty("tempmax")
         private float tempMax;

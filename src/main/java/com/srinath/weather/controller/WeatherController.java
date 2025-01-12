@@ -1,5 +1,4 @@
 package com.srinath.weather.controller;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.srinath.weather.DTO.ForecastResponse;
 import com.srinath.weather.DTO.HourlyResponse;
 import com.srinath.weather.DTO.weatherResponse2;
@@ -7,7 +6,6 @@ import com.srinath.weather.service.ForecastService;
 import com.srinath.weather.service.weatherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,35 +26,28 @@ public class WeatherController {
 
     @GetMapping(path="/{location}")
     public weatherResponse2 dailyWeather(@PathVariable(value = "location",required = true) String location) {
-        Cache cache = cacheManager.getCache("forecastData");
-
-        if (cache != null && cache.get(location) != null) {
-            log.info("Cache HIT for location: {}", location);
-        } else {
-            log.info("Cache MISS for location: {}, calling API", location);
-        }
+//        Cache cache = cacheManager.getCache("forecastData");
+//
+//        if (cache != null && cache.get(location) != null) {
+//            log.info("Cache HIT for location: {}", location);
+//        } else {
+//            log.info("Cache MISS for location: {}, calling API", location);
+//        }
          return weatherService.dailyService(location);
     }
     @GetMapping("hourly/{location}")
     public List<HourlyResponse.HourlyData> hourlyWeather(@PathVariable(value = "location",required = true) String location){
-        Cache cache = cacheManager.getCache("forecastData");
-
-        if (cache != null && cache.get(location) != null) {
-            log.info("Cache HIT for location: {}", location);
-        } else {
-            log.info("Cache MISS for location: {}, calling API", location);
-        }
+//        Cache cache = cacheManager.getCache("forecastData");
+//
+//        if (cache != null && cache.get(location) != null) {
+//            log.info("Cache HIT for location: {}", location);
+//        } else {
+//            log.info("Cache MISS for location: {}, calling API", location);
+//        }
          return weatherService.hourlyService(location);
     }
     @GetMapping("forecast/{location}")
     public ForecastResponse.LocationData forecastController(@PathVariable(value = "location",required = true) String location){
-        Cache cache = cacheManager.getCache("forecastData");
-
-        if (cache != null && cache.get(location) != null) {
-            log.info("Cache HIT for location: {}", location);
-        } else {
-            log.info("Cache MISS for location: {}, calling API", location);
-        }
         return forecastService.forecastData(location);
     }
 

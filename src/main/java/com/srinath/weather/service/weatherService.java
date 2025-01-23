@@ -23,6 +23,8 @@ public class weatherService {
     private String baseUrl;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
 
 //    @Cacheable(value = "dailyData",key = "#location")
@@ -41,14 +43,22 @@ public class weatherService {
             // Log and proceed if Redis is unavailable
             log.error("Redis is down or cache error occurred: {}", e.getMessage());
         }
-        String WEATHER_API_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+location+"?key="+apiKey;
+        String WEATHER_API_URL = baseUrl+location+"?key="+apiKey;
 
         try{
-            RestTemplate restTemplate = new RestTemplate();
             weatherResponse2 jsonResponse = restTemplate.getForObject(WEATHER_API_URL, weatherResponse2.class);
             weatherResponse2.DayWeather firstDayWeather = jsonResponse.getDaysweather().get(0);
+            weatherResponse2 result=new weatherResponse2(jsonResponse.getResolvedAddress(), List.of(firstDayWeather));
+            try {
+                redisTemplate.opsForValue().set(cacheKey, result);
+            }
+            catch (Exception e){
+                log.error("Failed to save data to Redis cache: {}", e.getMessage());
+
+            }
             log.info("Cache MISS for location: {}, calling API", location);
-            return new weatherResponse2(jsonResponse.getResolvedAddress(), List.of(firstDayWeather));
+            return result;
+
         }catch (RestClientException e) {
             log.error("Rest client error while calling the weather API:{} ", e.getMessage());
             return new weatherResponse2("Rest client error occurred",List.of());
@@ -73,11 +83,17 @@ public class weatherService {
             // Log and proceed if Redis is unavailable
             log.error("Redis is down or cache error occurred: {}", e.getMessage());
         }
-        String WEATHER_API_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"+location+"?key="+apiKey;
+        String WEATHER_API_URL = baseUrl+location+"?key="+apiKey;
         try{
-            RestTemplate restTemplate = new RestTemplate();
+//            RestTemplate restTemplate = new RestTemplate();
             HourlyResponse jsonResponse = restTemplate.getForObject(WEATHER_API_URL, HourlyResponse.class);
             HourlyResponse.DaysWeather firstDayWeather = jsonResponse.getWeather().get(0);
+            try {
+                redisTemplate.opsForValue().set(cacheKey, firstDayWeather.getHours());
+            }
+            catch (Exception e){
+                log.error("Failed to save data to Redis cache: {}", e.getMessage());
+            }
             log.info("Cache MISS for location: {}, calling API", location);
             return firstDayWeather.getHours();
         }catch (RestClientException e) {

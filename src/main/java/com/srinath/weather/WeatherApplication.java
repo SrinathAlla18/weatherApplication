@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableCaching
+//@EnableAspectJAutoProxy
 public class WeatherApplication {
 
 	public static void main(String[] args) {
